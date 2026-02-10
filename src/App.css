@@ -20,11 +20,31 @@
 
 /* icon grid */
 .icon-grid {
+  /* removed usage; kept for compatibility */
+  display: none;
+}
+
+/* new icons layer: absolute movable icons */
+.icons-layer {
+  position: relative;
+  width: 100%;
+  height: 380px; /* area where icons can be moved; adjust as needed */
+  margin-bottom: 18px;
+}
+
+.icon-absolute {
+  position: absolute;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  /* so the icon keeps its visual size regardless of container */
+  width: 120px;
+  height: 140px;
   display: flex;
-  gap: 24px;
-  flex-wrap: wrap;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  transform-origin: top left;
+  z-index: 1;
 }
 
 /* hex icon */

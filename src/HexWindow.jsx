@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 
-export default function HexWindow({ title, children, onClose }) {
+export default function HexWindow({ title, children, onClose, onFocus }) {
   const ref = useRef(null)
   const [pos, setPos] = useState({ x: 120, y: 80 })
   const [size, setSize] = useState({ w: 420, h: 360 })
@@ -8,6 +8,7 @@ export default function HexWindow({ title, children, onClose }) {
   const dragStart = useRef({ x: 0, y: 0 })
 
   function onMouseDown(e) {
+    onFocus?.()
     dragging.current = true
     dragStart.current = { x: e.clientX - pos.x, y: e.clientY - pos.y }
     window.addEventListener('mousemove', onMouseMove)
@@ -26,6 +27,7 @@ export default function HexWindow({ title, children, onClose }) {
   // simple resize handler on bottom-right corner
   function onResizeMouseDown(e) {
     e.stopPropagation()
+    onFocus?.()
     const start = { x: e.clientX, y: e.clientY, w: size.w, h: size.h }
     function move(ev) {
       setSize({ w: Math.max(220, start.w + (ev.clientX - start.x)), h: Math.max(160, start.h + (ev.clientY - start.y)) })
@@ -47,11 +49,17 @@ export default function HexWindow({ title, children, onClose }) {
       <div className="hex-frame">
         <div className="hex-titlebar" onMouseDown={onMouseDown}>
           <span className="hex-title">{title}</span>
-          <button className="hex-close" onClick={onClose}>✕</button>
+          <button
+            className="hex-close"
+            onClick={(e) => {
+              e.stopPropagation()
+              onClose()
+            }}
+          >
+            ✕
+          </button>
         </div>
-        <div className="hex-content">
-          {children}
-        </div>
+        <div className="hex-content">{children}</div>
         <div className="hex-resize" onMouseDown={onResizeMouseDown} />
       </div>
     </div>
