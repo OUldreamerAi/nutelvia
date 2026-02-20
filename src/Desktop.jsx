@@ -4,16 +4,21 @@ import HexWindow from './HexWindow.jsx'
 import TicTacToe from './TicTacToe.jsx'
 
 export default function Desktop() {
-  // initial icon positions (px)
+  const hexWidth = 150 
+  const hexHeight = 130 
+  const horizontalOffset = hexWidth / 2 
+  
+
   const [icons, setIcons] = useState([
-    { id: 'tictactoe', label: 'TicTacToe', x: 40, y: 40 },
-    { id: 'drawing', label: 'Drawing', x: 200, y: 40 },
-    { id: 'notebook', label: 'Notebook', x: 360, y: 40 },
-    { id: 'games', label: 'Games', x: 520, y: 40 },
-    { id: 'chat', label: 'Chatbot', x: 680, y: 40 },
+    { id: 'tictactoe', label: 'TicTacToe', x: 50, y: 40 },
+    { id: 'drawing', label: 'Drawing', x: 50 + hexWidth * 2, y: 40 },
+    
+    { id: 'notebook', label: 'Notebook', x: 50 + horizontalOffset, y: 40 + hexHeight },
+    { id: 'games', label: 'Games', x: 50 + horizontalOffset + hexWidth * 2, y: 40 + hexHeight },
+    
+    { id: 'chat', label: 'Chatbot', x: 50 + hexWidth, y: 40 + hexHeight * 2 },
   ])
 
-  // windows with z-order
   const nextZ = useRef(100)
   const [windows, setWindows] = useState([])
 
@@ -30,13 +35,11 @@ export default function Desktop() {
     setWindows(w => w.map(win => (win.id === id ? { ...win, z: ++nextZ.current } : win)))
   }
 
-  // icon dragging state
   const dragging = useRef(null)
   const dragOffset = useRef({ x: 0, y: 0 })
 
   function onIconPointerDown(e, icon) {
     e.preventDefault()
-    // allow double-click to still fire on the inner button
     dragging.current = icon.id
     dragOffset.current = { x: e.clientX - icon.x, y: e.clientY - icon.y }
     window.addEventListener('pointermove', onIconPointerMove)
@@ -46,8 +49,10 @@ export default function Desktop() {
   function onIconPointerMove(e) {
     const id = dragging.current
     if (!id) return
-    const nx = Math.max(8, e.clientX - dragOffset.current.x)
-    const ny = Math.max(8, e.clientY - dragOffset.current.y)
+    
+    const nx = Math.max(0, Math.min(window.innerWidth - 140, e.clientX - dragOffset.current.x))
+    const ny = Math.max(0, Math.min(window.innerHeight - 160, e.clientY - dragOffset.current.y))
+    
     setIcons(prev => prev.map(ic => (ic.id === id ? { ...ic, x: nx, y: ny } : ic)))
   }
 
@@ -76,36 +81,39 @@ export default function Desktop() {
         ))}
       </div>
 
-      {windows
-        .slice()
-        .sort((a, b) => a.z - b.z)
-        .map(win => (
-          <HexWindow
-            key={win.id}
-            title={win.title}
-            onClose={() => closeWindow(win.id)}
-            onFocus={() => bringToFront(win.id)}
-            // position override if you want to allow window initial pos
-            // ...existing code...
-          >
-            {win.appId === 'tictactoe' && <TicTacToe />}
-            {win.appId === 'games' && (
-              <div className="group-window">
-                <HexIcon label="Snake" onDoubleClick={() => openApp('snake', 'Snake')} />
-                <HexIcon label="TicTacToe" onDoubleClick={() => openApp('tictactoe', 'Tic Tac Toe')} />
-              </div>
-            )}
-            {win.appId === 'chat' && (
-              <div className="chat-placeholder">
-                <p>AI Chatbot placeholder.</p>
-                <p>To wire the chatbot, use an env var VITE_AI_KEY and fetch from your server or proxy.</p>
-              </div>
-            )}
-            {win.appId === 'drawing' && <div style={{ padding: 20 }}>Simple drawing placeholder.</div>}
-            {win.appId === 'notebook' && <div style={{ padding: 20 }}>Notebook placeholder.</div>}
-            {win.appId === 'snake' && <div style={{ padding: 20 }}>Snake placeholder.</div>}
-          </HexWindow>
-        ))}
+      {(() => {
+        const topZ = windows.length ? Math.max(...windows.map(w => w.z)) : 0
+        return windows
+          .slice()
+          .sort((a, b) => a.z - b.z)
+          .map(win => (
+            <HexWindow
+              key={win.id}
+              title={win.title}
+              onClose={() => closeWindow(win.id)}
+              onFocus={() => bringToFront(win.id)}
+              z={win.z}
+              isFocused={win.z === topZ}
+            >
+              {win.appId === 'tictactoe' && <TicTacToe />}
+              {win.appId === 'games' && (
+                <div className="group-window">
+                  <HexIcon label="Snake" onDoubleClick={() => openApp('snake', 'Snake')} />
+                  <HexIcon label="TicTacToe" onDoubleClick={() => openApp('tictactoe', 'Tic Tac Toe')} />
+                </div>
+              )}
+              {win.appId === 'chat' && (
+                <div className="chat-placeholder">
+                  <p>AI Chatbot placeholder.</p>
+                  <p>To wire the chatbot, use an env var VITE_AI_KEY and fetch from your server or proxy.</p>
+                </div>
+              )}
+              {win.appId === 'drawing' && <div style={{ padding: 20 }}>Simple drawing placeholder.</div>}
+              {win.appId === 'notebook' && <div style={{ padding: 20 }}>Notebook placeholder.</div>}
+              {win.appId === 'snake' && <div style={{ padding: 20 }}>Snake placeholder.</div>}
+            </HexWindow>
+          ))
+      })()}
     </div>
   )
 }
