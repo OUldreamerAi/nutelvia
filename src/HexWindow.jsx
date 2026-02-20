@@ -3,7 +3,7 @@ import { useRef, useState } from 'react'
 export default function HexWindow({ title, children, onClose, onFocus, z = 0, isFocused = false }) {
   const ref = useRef(null)
   const [pos, setPos] = useState({ x: 120, y: 80 })
-  const [size, setSize] = useState({ w: 420, h: 360 })
+  const [size, setSize] = useState({ w: 520, h: 440 })
   const dragging = useRef(false)
   const dragStart = useRef({ x: 0, y: 0 })
 
@@ -19,7 +19,6 @@ export default function HexWindow({ title, children, onClose, onFocus, z = 0, is
   function onPointerMove(e) {
     if (!dragging.current) return
     
-    // Add boundary checking to prevent dragging off screen
     const maxX = window.innerWidth - size.w
     const maxY = window.innerHeight - size.h
     const newX = Math.max(0, Math.min(maxX, e.clientX - dragStart.current.x))
@@ -34,7 +33,6 @@ export default function HexWindow({ title, children, onClose, onFocus, z = 0, is
     window.removeEventListener('pointerup', onPointerUp)
   }
 
-  // pointer-based resize handler on bottom-right corner
   function onResizePointerDown(e) {
     e.stopPropagation()
     onFocus?.()
@@ -58,9 +56,7 @@ export default function HexWindow({ title, children, onClose, onFocus, z = 0, is
     onClose()
   }
 
-  // Handle window click (but not for close/resize buttons)
   function handleWindowClick(e) {
-    // Only focus if not clicking close or resize
     if (!e.target.closest('.hex-close') && !e.target.closest('.hex-resize')) {
       onFocus?.()
     }
@@ -78,7 +74,6 @@ export default function HexWindow({ title, children, onClose, onFocus, z = 0, is
           <span className="hex-title">{title}</span>
         </div>
 
-        {/* Close button positioned within hexagon visible area */}
         <button
           type="button"
           className="hex-close"
@@ -88,9 +83,7 @@ export default function HexWindow({ title, children, onClose, onFocus, z = 0, is
           ×
         </button>
 
-        <div className="hex-content">{children}</div>
-
-        {/* Resize handle positioned within hexagon visible area */}
+        <div className="hex-content app-content">{children}</div>
         <div className="hex-resize" onPointerDown={onResizePointerDown} />
       </div>
     </div>

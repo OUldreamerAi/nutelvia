@@ -2,6 +2,9 @@ import { useState, useRef } from 'react'
 import HexIcon from './HexIcon.jsx'
 import HexWindow from './HexWindow.jsx'
 import TicTacToe from './TicTacToe.jsx'
+import Snake from './Snake.jsx'
+import Notebook from './Notebook.jsx'
+import Drawing from './Drawing.jsx'
 
 export default function Desktop() {
   const hexWidth = 150 
@@ -16,7 +19,6 @@ export default function Desktop() {
     { id: 'notebook', label: 'Notebook', x: 50 + horizontalOffset, y: 40 + hexHeight },
     { id: 'games', label: 'Games', x: 50 + horizontalOffset + hexWidth * 2, y: 40 + hexHeight },
     
-    { id: 'chat', label: 'Chatbot', x: 50 + hexWidth, y: 40 + hexHeight * 2 },
   ])
 
   const nextZ = useRef(100)
@@ -108,9 +110,9 @@ export default function Desktop() {
                   <p>To wire the chatbot, use an env var VITE_AI_KEY and fetch from your server or proxy.</p>
                 </div>
               )}
-              {win.appId === 'drawing' && <div style={{ padding: 20 }}>Simple drawing placeholder.</div>}
-              {win.appId === 'notebook' && <div style={{ padding: 20 }}>Notebook placeholder.</div>}
-              {win.appId === 'snake' && <div style={{ padding: 20 }}>Snake placeholder.</div>}
+              {win.appId === 'drawing' && <Drawing />}
+              {win.appId === 'notebook' && <Notebook />}
+              {win.appId === 'snake' && <Snake />}
             </HexWindow>
           ))
       })()}
