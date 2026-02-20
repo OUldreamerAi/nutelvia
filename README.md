@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Nutelva
 Nutelvia is a simple fake web os with feature like:
 - dragabable apps
