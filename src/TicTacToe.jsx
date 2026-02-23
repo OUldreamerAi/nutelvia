@@ -3,6 +3,7 @@ import { useState } from "react";
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap');
 
+  
   .ttt-root {
     min-height: 100vh;
     background: #0f0f0f;
